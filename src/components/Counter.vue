@@ -10,3 +10,9 @@ const count = ref(0);
   <button @click="count--">-</button>
   <button @click="count++">+</button>
 </template>
+
+<style scoped>
+button:hover {
+  cursor: pointer;
+}
+</style>
