@@ -2,6 +2,24 @@
 import { ref } from "vue";
 const showModal = ref(false);
 const newNote = ref("");
+const notes = ref([]);
+const errMsg = "";
+
+const addNote = () => {
+  if (newNote.value.length < 10) return (errMsg.value = "Err");
+  notes.value.push({
+    id: Math.floor(Math.random() * 100000),
+    text: newNote.value,
+    date: new Date().toLocaleString("en-US"),
+    backgroundColor: getRandomColor(),
+  });
+  showModal.value = false;
+  newNote.value = "";
+};
+
+function getRandomColor() {
+  return "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+}
 </script>
 
 <template>
@@ -11,6 +29,7 @@ const newNote = ref("");
       <button @click="showModal = true" class="add-note">Add</button>
     </div>
     <div v-if="showModal" class="overlay">
+      <div v-if="errMsg">{{ errMsg }}</div>
       <div class="note-input-area">
         <textarea
           v-model="newNote"
@@ -19,30 +38,21 @@ const newNote = ref("");
           cols="30"
           rows="10"
         ></textarea>
-        <button class="submit">Submit</button>
+        <button class="submit" @click="addNote">Add Note</button>
         <button class="close" @click="showModal = false">Close</button>
       </div>
     </div>
     <div class="notes-container">
-      <div class="notes">
+      <div
+        v-for="note in notes"
+        class="notes"
+        :key="note.id"
+        :style="{ backgroundColor: note.backgroundColor }"
+      >
         <h4>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio, enim.
+          {{ note.text }}
         </h4>
-      </div>
-      <div class="notes">
-        <h4>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio, enim.
-        </h4>
-      </div>
-      <div class="notes">
-        <h4>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio, enim.
-        </h4>
-      </div>
-      <div class="notes">
-        <h4>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio, enim.
-        </h4>
+        <p>{{ note.date }}</p>
       </div>
     </div>
   </main>
@@ -71,6 +81,10 @@ const newNote = ref("");
   height: 175px;
   padding: 10px 20px;
   border-radius: 15px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .add-note {
