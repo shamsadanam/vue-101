@@ -1,16 +1,16 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onUpdated } from "vue";
 const showModal = ref(false);
 const newNote = ref("");
 const notes = ref([]);
-const errMsg = "";
+const errMsg = ref("");
 
 const addNote = () => {
-  if (newNote.value.length < 10) return (errMsg.value = "Err");
+  if (newNote.value.length < 5) return (errMsg.value = "Write some more ...");
   notes.value.push({
     id: Math.floor(Math.random() * 100000),
     text: newNote.value,
-    date: new Date().toLocaleString("en-US"),
+    date: new Date().toLocaleDateString("en-US"),
     backgroundColor: getRandomColor(),
   });
   showModal.value = false;
@@ -20,6 +20,13 @@ const addNote = () => {
 function getRandomColor() {
   return "hsl(" + Math.random() * 360 + ", 100%, 75%)";
 }
+
+onUpdated(() => {
+  if (newNote.value.length >= 5) {
+    console.log("New Note is more than five");
+    errMsg.value = "";
+  }
+});
 </script>
 
 <template>
@@ -29,8 +36,8 @@ function getRandomColor() {
       <button @click="showModal = true" class="add-note">Add</button>
     </div>
     <div v-if="showModal" class="overlay">
-      <div v-if="errMsg">{{ errMsg }}</div>
       <div class="note-input-area">
+        <div v-if="errMsg" class="errMsg">{{ errMsg }}</div>
         <textarea
           v-model="newNote"
           name="note-input"
@@ -76,7 +83,6 @@ function getRandomColor() {
   gap: 1.5em;
 }
 .notes {
-  background-color: aquamarine;
   width: 175px;
   height: 175px;
   padding: 10px 20px;
@@ -85,6 +91,8 @@ function getRandomColor() {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  overflow-wrap: break-word;
 }
 
 .add-note {
@@ -100,7 +108,7 @@ function getRandomColor() {
 
 .overlay {
   width: 600px;
-  height: 300px;
+  height: 400px;
 
   position: absolute;
   left: 50%;
@@ -135,5 +143,10 @@ function getRandomColor() {
 .submit:hover,
 .close:hover {
   cursor: pointer;
+}
+
+.errMsg {
+  color: rgb(224, 115, 115);
+  margin: 10px 0;
 }
 </style>
